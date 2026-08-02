@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Apex Fractal | Robs Fractals",
+  title: "Apex Fractal | Rob's Fractals",
 };
 
 const subPages = [

@@ -3,8 +3,8 @@ import "./globals.css";
 import Nav from "./components/nav";
 
 export const metadata: Metadata = {
-  title: "Robs Fractals",
-  description: "Robs Fractals",
+  title: "Rob's Fractals",
+  description: "Rob's Fractals",
 };
 
 export default function RootLayout({

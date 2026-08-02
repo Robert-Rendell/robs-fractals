@@ -1,0 +1,41 @@
+.cards {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card {
+  display: block;
+  width: 320px;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: #378add;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cardBody {
+  padding: 1rem;
+}
+
+.cardTitle {
+  font-weight: 600;
+}
+
+.cardDescription {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
