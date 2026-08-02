@@ -113,10 +113,13 @@ export default function Iterated3DFractal() {
       let camDist = 260;
       let line: ThreeTypes.LineSegments | null = null;
 
+      const initialWidth = viewport.clientWidth || 300;
+      const initialHeight = viewport.clientHeight || 400;
+
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, viewport.clientWidth / 400, 0.1, 5000);
+      const camera = new THREE.PerspectiveCamera(50, initialWidth / initialHeight, 0.1, 5000);
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(viewport.clientWidth, 400);
+      renderer.setSize(initialWidth, initialHeight);
       renderer.setPixelRatio(window.devicePixelRatio || 1);
       viewport.appendChild(renderer.domElement);
 
@@ -216,19 +219,28 @@ export default function Iterated3DFractal() {
         return screenToPlane(x, y);
       }
 
-      const onPtDown = () => {
+      const onPtDown = (e: PointerEvent) => {
         dragC = true;
+        pt.setPointerCapture(e.pointerId);
+        e.preventDefault();
       };
       const onSvgDown = (e: PointerEvent) => {
         if (e.target === pt) return;
         dragC = true;
         const [re, im] = pointerPosC(e);
         setC(re, im);
+        e.preventDefault();
       };
-      const onWindowUp = () => {
+      const onWindowUp = (e: PointerEvent) => {
         dragC = false;
         dragV = false;
         renderer.domElement.style.cursor = "grab";
+        if (pt.hasPointerCapture(e.pointerId)) {
+          pt.releasePointerCapture(e.pointerId);
+        }
+        if (renderer.domElement.hasPointerCapture(e.pointerId)) {
+          renderer.domElement.releasePointerCapture(e.pointerId);
+        }
       };
       const onWindowMove = (e: PointerEvent) => {
         if (dragC) {
@@ -241,6 +253,8 @@ export default function Iterated3DFractal() {
         lastX = e.clientX;
         lastY = e.clientY;
         renderer.domElement.style.cursor = "grabbing";
+        renderer.domElement.setPointerCapture(e.pointerId);
+        e.preventDefault();
       };
       const onViewportMove = (e: PointerEvent) => {
         if (!dragV) return;
@@ -282,11 +296,22 @@ export default function Iterated3DFractal() {
         renderer.render(scene, camera);
       }
 
+      const resizeObserver = new ResizeObserver(() => {
+        const width = viewport.clientWidth;
+        const height = viewport.clientHeight;
+        if (width === 0 || height === 0) return;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      });
+      resizeObserver.observe(viewport);
+
       setC(0.44, 0.44);
       animate();
 
       cleanupFns.push(() => {
         cancelAnimationFrame(rafId);
+        resizeObserver.disconnect();
         pt.removeEventListener("pointerdown", onPtDown);
         svg.removeEventListener("pointerdown", onSvgDown);
         window.removeEventListener("pointerup", onWindowUp);

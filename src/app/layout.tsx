@@ -16,7 +16,17 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Nav />
-        <main style={{ padding: "2rem 1.5rem", flex: 1 }}>{children}</main>
+        <main
+          style={{
+            padding: "2rem 1.5rem",
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {children}
+        </main>
       </body>
     </html>
   );

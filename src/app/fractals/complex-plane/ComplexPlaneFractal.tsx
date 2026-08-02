@@ -171,19 +171,25 @@ export default function ComplexPlaneFractal() {
       return screenToPlane(x, y);
     }
 
-    const onPtDown = () => {
+    const onPtDown = (e: PointerEvent) => {
       dragging = true;
       pt.style.cursor = "grabbing";
+      pt.setPointerCapture(e.pointerId);
+      e.preventDefault();
     };
     const onSvgDown = (e: PointerEvent) => {
       if (e.target === pt) return;
       dragging = true;
       const [re, im] = pointerPos(e);
       setC(re, im);
+      e.preventDefault();
     };
-    const onWindowUp = () => {
+    const onWindowUp = (e: PointerEvent) => {
       dragging = false;
       pt.style.cursor = "grab";
+      if (pt.hasPointerCapture(e.pointerId)) {
+        pt.releasePointerCapture(e.pointerId);
+      }
     };
     const onWindowMove = (e: PointerEvent) => {
       if (!dragging) return;
@@ -196,6 +202,24 @@ export default function ComplexPlaneFractal() {
     window.addEventListener("pointerup", onWindowUp);
     window.addEventListener("pointermove", onWindowMove);
 
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const w = Math.max(1, Math.round(rect.width * dpr));
+      const h = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      resizeCanvas();
+      updateAll();
+    });
+    resizeObserver.observe(canvas);
+
+    resizeCanvas();
     setC(0.44, 0.44);
 
     return () => {
@@ -203,6 +227,7 @@ export default function ComplexPlaneFractal() {
       svg.removeEventListener("pointerdown", onSvgDown);
       window.removeEventListener("pointerup", onWindowUp);
       window.removeEventListener("pointermove", onWindowMove);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -255,7 +280,9 @@ export default function ComplexPlaneFractal() {
             </div>
           </div>
         </div>
-        <canvas ref={canvasRef} className={styles.fractal} width={420} height={420} />
+        <div className={styles.fractalWrap}>
+          <canvas ref={canvasRef} className={styles.fractal} />
+        </div>
       </div>
       <p className={styles.hint}>
         Drag the dot on the complex plane. Distance from center = scale, angle from the real

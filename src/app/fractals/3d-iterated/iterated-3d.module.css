@@ -2,9 +2,12 @@
   background: #16140f;
   color: #e8e6dd;
   padding: 2rem;
-  max-width: 900px;
-  margin: 0 auto;
   border-radius: 12px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .heading {
@@ -17,7 +20,9 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
 }
 
 .panel {
@@ -29,16 +34,32 @@
   cursor: grab;
   background: #201d17;
   border-radius: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.plane * {
+  -webkit-user-drag: none;
 }
 
 .viewport {
-  flex: 1 1 300px;
+  position: relative;
+  flex: 1 1 auto;
   min-width: 280px;
-  height: 400px;
+  min-height: 280px;
   cursor: grab;
   background: #201d17;
   border-radius: 12px;
   overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.viewport canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 
 .readout {
