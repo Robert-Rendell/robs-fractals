@@ -2,8 +2,6 @@ import Link from "next/link";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
   { href: "/fractals/complex-plane", label: "Complex Plane" },
   { href: "/fractals/3d-iterated", label: "3D Iterated" },
 ];
