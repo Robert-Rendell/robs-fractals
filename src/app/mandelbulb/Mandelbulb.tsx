@@ -8,8 +8,7 @@ type Vec3 = [number, number, number];
 
 const POWER_MIN = 2;
 const POWER_MAX = 69;
-const SWEET_SPOT_MIN = 3;
-const SWEET_SPOT_MAX = 10;
+const POWER_TICKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 const INITIAL_ROT_X = 0.3;
 const INITIAL_ROT_Y = 0.6;
@@ -63,18 +62,33 @@ export default function Mandelbulb() {
   const powerRef = useRef<HTMLInputElement>(null);
   const powerOutRef = useRef<HTMLSpanElement>(null);
   const powerTooltipRef = useRef<HTMLDivElement>(null);
+  const tickMarksRef = useRef<HTMLDivElement>(null);
   const flyButtonRef = useRef<HTMLButtonElement>(null);
+  const colorButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const viewportEl = viewportRef.current;
     const powerInputEl = powerRef.current;
     const powerTooltipEl = powerTooltipRef.current;
+    const tickMarksEl = tickMarksRef.current;
     const flyButtonEl = flyButtonRef.current;
-    if (!viewportEl || !powerInputEl || !powerTooltipEl || !flyButtonEl) return;
+    const colorButtonEl = colorButtonRef.current;
+    if (
+      !viewportEl ||
+      !powerInputEl ||
+      !powerTooltipEl ||
+      !tickMarksEl ||
+      !flyButtonEl ||
+      !colorButtonEl
+    ) {
+      return;
+    }
     const viewport: HTMLDivElement = viewportEl;
     const powerInput: HTMLInputElement = powerInputEl;
     const powerTooltip: HTMLDivElement = powerTooltipEl;
+    const tickMarks: HTMLDivElement = tickMarksEl;
     const flyButton: HTMLButtonElement = flyButtonEl;
+    const colorButton: HTMLButtonElement = colorButtonEl;
 
     let disposed = false;
     const cleanupFns: Array<() => void> = [];
@@ -93,6 +107,7 @@ export default function Mandelbulb() {
       let flying = false;
       let flyRafId = 0;
       let flyTime = 0;
+      let colorful = false;
       const activePointers = new Map<number, { x: number; y: number }>();
       let lastPinchDist: number | null = null;
 
@@ -120,6 +135,7 @@ export default function Mandelbulb() {
         uCamForward: { value: new THREE.Vector3() },
         uPower: { value: power },
         uTanHalfFov: { value: Math.tan(((50 * Math.PI) / 180) / 2) },
+        uColorful: { value: 0 },
       };
 
       const material = new THREE.ShaderMaterial({
@@ -233,11 +249,32 @@ export default function Mandelbulb() {
         positionTooltip();
       }
 
-      const onPowerInput = () => {
-        power = sliderPosToPower(Number(powerInput.value));
+      function updateFromPower() {
         uniforms.uPower.value = power;
         updatePowerDisplay();
         render();
+      }
+
+      const onPowerInput = () => {
+        power = sliderPosToPower(Number(powerInput.value));
+        updateFromPower();
+      };
+
+      // Used by tick-mark clicks (not the slider's own input event) to jump
+      // to a specific power — this is the only path that writes back to
+      // powerInput.value, so live dragging never round-trips through
+      // powerToSliderPos/sliderPosToPower and drifts.
+      function applyPower(newPower: number) {
+        power = newPower;
+        powerInput.value = String(powerToSliderPos(newPower));
+        updateFromPower();
+      }
+
+      const onTickClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const tickEl = target.closest("[data-power]") as HTMLElement | null;
+        if (!tickEl) return;
+        applyPower(Number(tickEl.dataset.power));
       };
 
       function flyStep() {
@@ -267,6 +304,14 @@ export default function Mandelbulb() {
         }
       };
 
+      const onColorToggle = () => {
+        colorful = !colorful;
+        uniforms.uColorful.value = colorful ? 1 : 0;
+        colorButton.textContent = colorful ? "Colouring: on" : "Colouring: off";
+        colorButton.setAttribute("aria-pressed", String(colorful));
+        render();
+      };
+
       renderer.domElement.addEventListener("pointerdown", onPointerDown);
       window.addEventListener("pointermove", onPointerMove);
       window.addEventListener("pointerup", onPointerUp);
@@ -274,6 +319,8 @@ export default function Mandelbulb() {
       renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
       powerInput.addEventListener("input", onPowerInput);
       flyButton.addEventListener("click", onFlyToggle);
+      colorButton.addEventListener("click", onColorToggle);
+      tickMarks.addEventListener("click", onTickClick);
 
       const resizeObserver = new ResizeObserver(() => {
         const width = viewport.clientWidth;
@@ -302,6 +349,8 @@ export default function Mandelbulb() {
         renderer.domElement.removeEventListener("wheel", onWheel);
         powerInput.removeEventListener("input", onPowerInput);
         flyButton.removeEventListener("click", onFlyToggle);
+        colorButton.removeEventListener("click", onColorToggle);
+        tickMarks.removeEventListener("click", onTickClick);
         geometry.dispose();
         material.dispose();
         renderer.dispose();
@@ -336,19 +385,20 @@ export default function Mandelbulb() {
               <div ref={powerTooltipRef} className={styles.tooltip}>
                 8.0000
               </div>
-              <div
-                className={styles.sweetSpot}
-                style={{
-                  left: `${(powerToSliderPos(SWEET_SPOT_MIN) / SLIDER_MAX) * 100}%`,
-                  width: `${
-                    ((powerToSliderPos(SWEET_SPOT_MAX) - powerToSliderPos(SWEET_SPOT_MIN)) /
-                      SLIDER_MAX) *
-                    100
-                  }%`,
-                }}
-              >
-                <span className={styles.sweetSpotArrow}>↔</span>
-                <span>sweet spot</span>
+              <div ref={tickMarksRef} className={styles.tickMarks}>
+                {POWER_TICKS.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={styles.tick}
+                    data-power={n}
+                    aria-label={`Set power to ${n}`}
+                    style={{ left: `${(powerToSliderPos(n) / SLIDER_MAX) * 100}%` }}
+                  >
+                    <span className={styles.tickLine} />
+                    <span className={styles.tickLabel}>{n}</span>
+                  </button>
+                ))}
               </div>
             </div>
             <span ref={powerOutRef}>8.0000</span>
@@ -357,10 +407,18 @@ export default function Mandelbulb() {
         <button
           ref={flyButtonRef}
           type="button"
-          className={styles.flyButton}
+          className={styles.toggleButton}
           aria-pressed="false"
         >
           Fly around
+        </button>
+        <button
+          ref={colorButtonRef}
+          type="button"
+          className={styles.toggleButton}
+          aria-pressed="false"
+        >
+          Colouring: off
         </button>
       </div>
       <div ref={viewportRef} className={styles.viewport} />

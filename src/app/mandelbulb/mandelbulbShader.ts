@@ -24,6 +24,7 @@ uniform vec3 uCamUp;
 uniform vec3 uCamForward;
 uniform float uPower;
 uniform float uTanHalfFov;
+uniform float uColorful;
 
 float mandelbulbDE(vec3 pos) {
   vec3 z = pos;
@@ -42,6 +43,29 @@ float mandelbulbDE(vec3 pos) {
     z += pos;
   }
   return 0.5 * log(max(r, 1e-6)) * r / max(dr, 1e-6);
+}
+
+// Re-runs the same iteration as mandelbulbDE, once, at the final hit point,
+// tracking the closest each axis of z ever got to zero along the orbit (the
+// classic "orbit trap" technique). Kept separate from mandelbulbDE so the
+// raymarch loop and normal estimation — which call the distance estimator
+// many times per pixel — don't pay for this extra bookkeeping.
+vec3 mandelbulbOrbitTrap(vec3 pos) {
+  vec3 z = pos;
+  vec3 trap = vec3(1e10);
+  for (int i = 0; i < 10; i++) {
+    float r = length(z);
+    if (r > 2.0) break;
+    trap = min(trap, abs(z));
+    float theta = acos(clamp(z.z / r, -1.0, 1.0));
+    float phi = atan(z.y, z.x);
+    float zr = pow(r, uPower);
+    theta *= uPower;
+    phi *= uPower;
+    z = zr * vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    z += pos;
+  }
+  return trap;
 }
 
 vec3 estimateNormal(vec3 p) {
@@ -88,6 +112,11 @@ void main() {
   float diff = max(dot(n, lightDir), 0.0);
   float ao = 1.0 - float(steps) / float(MAX_STEPS);
   vec3 baseColor = vec3(0.22, 0.54, 0.87);
+  if (uColorful > 0.5) {
+    vec3 trap = mandelbulbOrbitTrap(p);
+    float t2 = (trap.x + trap.y + trap.z) / 3.0;
+    baseColor = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.33, 0.67) + t2 * 2.5));
+  }
   vec3 color = baseColor * (0.15 + 0.85 * diff) * (0.4 + 0.6 * ao);
   float rim = pow(1.0 - max(dot(n, -rd), 0.0), 2.5);
   color += rim * vec3(0.3, 0.5, 0.8) * 0.5;
