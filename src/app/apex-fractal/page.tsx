@@ -16,6 +16,18 @@ const subPages = [
     label: "Apex Fractal: 3D",
     description: "The same generator, iterated and twisted through a third dimension.",
   },
+  {
+    href: "/apex-fractal/3d-fixed",
+    label: "Apex Fractal: 3D (Fixed Frame)",
+    description:
+      "Same as above, but with a continuously carried-forward branching frame so twist=0 is always exactly flat.",
+  },
+  {
+    href: "/apex-fractal/4d",
+    label: "Apex Fractal: 4D (Parallel Universes)",
+    description:
+      "Every lineage through the branching tree is a parallel universe. Scrub between them and watch nearby branches fade in and out.",
+  },
 ];
 
 export default function ApexFractalPage() {

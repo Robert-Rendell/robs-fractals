@@ -39,3 +39,39 @@
   color: var(--muted);
   margin-top: 0.25rem;
 }
+
+.categories {
+  margin-top: 2.5rem;
+  max-width: 720px;
+}
+
+.categories h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.categories > p {
+  color: var(--muted);
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+
+.categoryList {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.categoryList li {
+  line-height: 1.6;
+}
+
+.subList {
+  margin-top: 0.5rem;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
