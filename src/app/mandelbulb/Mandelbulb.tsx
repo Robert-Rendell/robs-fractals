@@ -6,6 +6,48 @@ import styles from "./mandelbulb.module.css";
 
 type Vec3 = [number, number, number];
 
+const POWER_MIN = 2;
+const POWER_MAX = 69;
+const SWEET_SPOT_MIN = 3;
+const SWEET_SPOT_MAX = 10;
+
+const INITIAL_ROT_X = 0.3;
+const INITIAL_ROT_Y = 0.6;
+const INITIAL_CAM_DIST = 3.0;
+
+// The slider itself moves over a linear 0..SLIDER_MAX position space that
+// maps piecewise-linearly onto the power range, devoting most of the track
+// to POWER_MIN..12 (where the interesting detail lives) and compressing
+// 12..POWER_MAX into the rest — so dragging is far more precise in the
+// sweet spot even though the underlying power step is still fine everywhere.
+const SLIDER_MAX = 1000;
+const SLIDER_SPLIT = 750;
+const SLIDER_SPLIT_POWER = 12;
+
+// Matches the thumb width set on the range input in mandelbulb.module.css —
+// needed to keep the tooltip centered over the thumb rather than the track.
+const SLIDER_THUMB_WIDTH = 16;
+
+const powerToSliderPos = (power: number): number => {
+  if (power <= SLIDER_SPLIT_POWER) {
+    return ((power - POWER_MIN) / (SLIDER_SPLIT_POWER - POWER_MIN)) * SLIDER_SPLIT;
+  }
+  return (
+    SLIDER_SPLIT +
+    ((power - SLIDER_SPLIT_POWER) / (POWER_MAX - SLIDER_SPLIT_POWER)) * (SLIDER_MAX - SLIDER_SPLIT)
+  );
+};
+
+const sliderPosToPower = (pos: number): number => {
+  if (pos <= SLIDER_SPLIT) {
+    return POWER_MIN + (pos / SLIDER_SPLIT) * (SLIDER_SPLIT_POWER - POWER_MIN);
+  }
+  return (
+    SLIDER_SPLIT_POWER +
+    ((pos - SLIDER_SPLIT) / (SLIDER_MAX - SLIDER_SPLIT)) * (POWER_MAX - SLIDER_SPLIT_POWER)
+  );
+};
+
 const norm3 = (v: Vec3): Vec3 => {
   const l = Math.hypot(v[0], v[1], v[2]) || 1;
   return [v[0] / l, v[1] / l, v[2] / l];
@@ -20,13 +62,19 @@ export default function Mandelbulb() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const powerRef = useRef<HTMLInputElement>(null);
   const powerOutRef = useRef<HTMLSpanElement>(null);
+  const powerTooltipRef = useRef<HTMLDivElement>(null);
+  const flyButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const viewportEl = viewportRef.current;
     const powerInputEl = powerRef.current;
-    if (!viewportEl || !powerInputEl) return;
+    const powerTooltipEl = powerTooltipRef.current;
+    const flyButtonEl = flyButtonRef.current;
+    if (!viewportEl || !powerInputEl || !powerTooltipEl || !flyButtonEl) return;
     const viewport: HTMLDivElement = viewportEl;
     const powerInput: HTMLInputElement = powerInputEl;
+    const powerTooltip: HTMLDivElement = powerTooltipEl;
+    const flyButton: HTMLButtonElement = flyButtonEl;
 
     let disposed = false;
     const cleanupFns: Array<() => void> = [];
@@ -35,13 +83,16 @@ export default function Mandelbulb() {
       const THREE = await import("three");
       if (disposed) return;
 
-      let rotX = 0.3;
-      let rotY = 0.6;
-      let camDist = 3.0;
+      let rotX = INITIAL_ROT_X;
+      let rotY = INITIAL_ROT_Y;
+      let camDist = INITIAL_CAM_DIST;
       let power = 8;
       let dragging = false;
       let lastX = 0;
       let lastY = 0;
+      let flying = false;
+      let flyRafId = 0;
+      let flyTime = 0;
       const activePointers = new Map<number, { x: number; y: number }>();
       let lastPinchDist: number | null = null;
 
@@ -168,11 +219,52 @@ export default function Mandelbulb() {
         camDist = Math.max(1.2, Math.min(8, camDist));
         render();
       };
+      function positionTooltip() {
+        const percent = Number(powerInput.value) / SLIDER_MAX;
+        const trackWidth = powerInput.clientWidth;
+        const x = SLIDER_THUMB_WIDTH / 2 + percent * (trackWidth - SLIDER_THUMB_WIDTH);
+        powerTooltip.style.left = `${x}px`;
+      }
+
+      function updatePowerDisplay() {
+        const text = power.toFixed(4);
+        if (powerOutRef.current) powerOutRef.current.textContent = text;
+        powerTooltip.textContent = text;
+        positionTooltip();
+      }
+
       const onPowerInput = () => {
-        power = Number(powerInput.value);
+        power = sliderPosToPower(Number(powerInput.value));
         uniforms.uPower.value = power;
-        if (powerOutRef.current) powerOutRef.current.textContent = power.toFixed(1);
+        updatePowerDisplay();
         render();
+      };
+
+      function flyStep() {
+        if (!dragging) {
+          flyTime += 0.01;
+          rotY += 0.006;
+          rotX = Math.sin(flyTime * 0.6) * 0.6;
+          render();
+        }
+        flyRafId = requestAnimationFrame(flyStep);
+      }
+
+      const onFlyToggle = () => {
+        flying = !flying;
+        flyButton.textContent = flying ? "Stop flying" : "Fly around";
+        flyButton.setAttribute("aria-pressed", String(flying));
+        if (flying) {
+          flyTime = 0;
+          flyRafId = requestAnimationFrame(flyStep);
+        } else {
+          cancelAnimationFrame(flyRafId);
+          flyRafId = 0;
+          rotX = INITIAL_ROT_X;
+          rotY = INITIAL_ROT_Y;
+          camDist = INITIAL_CAM_DIST;
+          render();
+        }
       };
 
       renderer.domElement.addEventListener("pointerdown", onPointerDown);
@@ -181,6 +273,7 @@ export default function Mandelbulb() {
       window.addEventListener("pointercancel", onPointerUp);
       renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
       powerInput.addEventListener("input", onPowerInput);
+      flyButton.addEventListener("click", onFlyToggle);
 
       const resizeObserver = new ResizeObserver(() => {
         const width = viewport.clientWidth;
@@ -192,16 +285,23 @@ export default function Mandelbulb() {
       });
       resizeObserver.observe(viewport);
 
+      const trackResizeObserver = new ResizeObserver(() => positionTooltip());
+      trackResizeObserver.observe(powerInput);
+
       render();
+      updatePowerDisplay();
 
       cleanupFns.push(() => {
+        cancelAnimationFrame(flyRafId);
         resizeObserver.disconnect();
+        trackResizeObserver.disconnect();
         renderer.domElement.removeEventListener("pointerdown", onPointerDown);
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
         window.removeEventListener("pointercancel", onPointerUp);
         renderer.domElement.removeEventListener("wheel", onWheel);
         powerInput.removeEventListener("input", onPowerInput);
+        flyButton.removeEventListener("click", onFlyToggle);
         geometry.dispose();
         material.dispose();
         renderer.dispose();
@@ -219,17 +319,51 @@ export default function Mandelbulb() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Mandelbulb</h1>
-      <div className={styles.row}>
-        <div className={styles.panel}>
+      <div className={styles.header}>
+        <h1 className={styles.heading}>Mandelbulb</h1>
+        <div className={styles.controls}>
           <label className={styles.sliderLabel}>Power (n)</label>
           <div className={styles.sliderRow}>
-            <input ref={powerRef} type="range" min={2} max={12} step={0.1} defaultValue={8} />
-            <span ref={powerOutRef}>8.0</span>
+            <div className={styles.sliderTrack}>
+              <input
+                ref={powerRef}
+                type="range"
+                min={0}
+                max={SLIDER_MAX}
+                step="any"
+                defaultValue={powerToSliderPos(8)}
+              />
+              <div ref={powerTooltipRef} className={styles.tooltip}>
+                8.0000
+              </div>
+              <div
+                className={styles.sweetSpot}
+                style={{
+                  left: `${(powerToSliderPos(SWEET_SPOT_MIN) / SLIDER_MAX) * 100}%`,
+                  width: `${
+                    ((powerToSliderPos(SWEET_SPOT_MAX) - powerToSliderPos(SWEET_SPOT_MIN)) /
+                      SLIDER_MAX) *
+                    100
+                  }%`,
+                }}
+              >
+                <span className={styles.sweetSpotArrow}>↔</span>
+                <span>sweet spot</span>
+              </div>
+            </div>
+            <span ref={powerOutRef}>8.0000</span>
           </div>
         </div>
-        <div ref={viewportRef} className={styles.viewport} />
+        <button
+          ref={flyButtonRef}
+          type="button"
+          className={styles.flyButton}
+          aria-pressed="false"
+        >
+          Fly around
+        </button>
       </div>
+      <div ref={viewportRef} className={styles.viewport} />
       <p className={styles.hint}>
         The 3D analogue of the Mandelbrot set: instead of iterating a complex number z → zⁿ + c,
         this generalizes &quot;raise a vector to the nth power&quot; to 3D via spherical
