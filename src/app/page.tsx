@@ -35,54 +35,103 @@ export default function Home() {
           like — and Mandelbrot and the Apex Fractal actually sit in two of the most
           fundamental categories:
         </p>
-        <ol className={styles.categoryList}>
-          <li>
-            <strong>Escape-time / dynamical fractals</strong> — iterate a function per point,
-            color by whether the orbit escapes to infinity or stays bounded. This is Mandelbrot
-            (z → z² + c), Julia sets (same map, fixed c, varying starting z), the Burning Ship,
-            and Newton fractals (basins of attraction for root-finding). The fractal is a map of
-            behavior over parameter/state space, not a constructed shape.
-          </li>
-          <li>
-            <strong>Iterated Function Systems (IFS)</strong> — a small set of contraction maps
-            applied recursively; the fractal is the attractor. This splits into two visually
-            distinct sub-families:
-            <ul className={styles.subList}>
-              <li>
-                <strong>Curve-replacement</strong>: a segment is replaced by a connected
-                polyline that keeps the same endpoints — Koch snowflake, dragon curve, Lévy C
-                curve, Cesàro/de Rham curves.
-              </li>
-              <li>
-                <strong>Branching</strong>: new segments sprout from a point (often a midpoint)
-                without reconnecting to the far endpoint — Pythagoras tree, H-trees, and the
-                Apex Fractal falls here.
-              </li>
-            </ul>
-          </li>
-          <li>
-            <strong>L-systems (Lindenmayer systems)</strong> — string-rewriting grammars driving
-            turtle graphics. Heavily overlaps with branching IFS (fractal plants, the Hilbert
-            curve) but generalizes it to arbitrary rule-based grammars rather than fixed
-            geometric maps.
-          </li>
-          <li>
-            <strong>Strange attractors</strong> — fractal-dimensional sets arising from chaotic
-            continuous dynamical systems, plotted in phase space rather than image space. Lorenz
-            attractor, Hénon map, Rössler attractor.
-          </li>
-          <li>
-            <strong>Random/statistical fractals</strong> — self-similar only in a statistical
-            sense, built from stochastic processes. Fractional Brownian motion,
-            diffusion-limited aggregation, Perlin-noise terrain, coastlines (Mandelbrot&apos;s
-            original motivating example).
-          </li>
-          <li>
-            <strong>Cellular-automaton / combinatorial fractals</strong> — fractal patterns
-            emerging from discrete rule iteration, e.g. Sierpiński&apos;s triangle from Pascal&apos;s
-            triangle mod 2, or Rule 90.
-          </li>
-        </ol>
+        <div className={styles.accordion}>
+          <details className={styles.accordionItem} name="fractal-categories" open>
+            <summary className={styles.accordionSummary}>
+              <span>1. Escape-time / dynamical fractals</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              Iterate a function per point, color by whether the orbit escapes to infinity or
+              stays bounded. This is Mandelbrot (z → z² + c), Julia sets (same map, fixed c,
+              varying starting z), the Burning Ship, and Newton fractals (basins of attraction
+              for root-finding). The fractal is a map of behavior over parameter/state space, not
+              a constructed shape.
+            </div>
+          </details>
+
+          <details className={styles.accordionItem} name="fractal-categories">
+            <summary className={styles.accordionSummary}>
+              <span>2. Iterated Function Systems (IFS)</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              A small set of contraction maps applied recursively; the fractal is the attractor.
+              This splits into two visually distinct sub-families:
+              <ul className={styles.subList}>
+                <li>
+                  <strong>Curve-replacement</strong>: a segment is replaced by a connected
+                  polyline that keeps the same endpoints — Koch snowflake, dragon curve, Lévy C
+                  curve, Cesàro/de Rham curves.
+                </li>
+                <li>
+                  <strong>Branching</strong>: new segments sprout from a point (often a
+                  midpoint) without reconnecting to the far endpoint — Pythagoras tree, H-trees,
+                  and the Apex Fractal falls here.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className={styles.accordionItem} name="fractal-categories">
+            <summary className={styles.accordionSummary}>
+              <span>3. L-systems (Lindenmayer systems)</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              String-rewriting grammars driving turtle graphics. Heavily overlaps with branching
+              IFS (fractal plants, the Hilbert curve) but generalizes it to arbitrary rule-based
+              grammars rather than fixed geometric maps.
+            </div>
+          </details>
+
+          <details className={styles.accordionItem} name="fractal-categories">
+            <summary className={styles.accordionSummary}>
+              <span>4. Strange attractors</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              Fractal-dimensional sets arising from chaotic continuous dynamical systems, plotted
+              in phase space rather than image space. Lorenz attractor, Hénon map, Rössler
+              attractor.
+            </div>
+          </details>
+
+          <details className={styles.accordionItem} name="fractal-categories">
+            <summary className={styles.accordionSummary}>
+              <span>5. Random/statistical fractals</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              Self-similar only in a statistical sense, built from stochastic processes.
+              Fractional Brownian motion, diffusion-limited aggregation, Perlin-noise terrain,
+              coastlines (Mandelbrot&apos;s original motivating example).
+            </div>
+          </details>
+
+          <details className={styles.accordionItem} name="fractal-categories">
+            <summary className={styles.accordionSummary}>
+              <span>6. Cellular-automaton / combinatorial fractals</span>
+              <span className={styles.accordionIcon} aria-hidden="true">
+                +
+              </span>
+            </summary>
+            <div className={styles.accordionContent}>
+              Fractal patterns emerging from discrete rule iteration, e.g. Sierpiński&apos;s
+              triangle from Pascal&apos;s triangle mod 2, or Rule 90.
+            </div>
+          </details>
+        </div>
         <p>
           Categories 2, 3, and 6 are all special cases of Hutchinson&apos;s IFS theory
           (deterministic self-similarity via contraction mappings); 1 and 4 are fundamentally
