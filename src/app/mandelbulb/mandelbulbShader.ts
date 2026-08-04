@@ -25,6 +25,7 @@ uniform vec3 uCamForward;
 uniform float uPower;
 uniform float uTanHalfFov;
 uniform float uColorful;
+uniform float uAdaptiveEps;
 
 float mandelbulbDE(vec3 pos) {
   vec3 z = pos;
@@ -68,8 +69,7 @@ vec3 mandelbulbOrbitTrap(vec3 pos) {
   return trap;
 }
 
-vec3 estimateNormal(vec3 p) {
-  float e = 0.0015;
+vec3 estimateNormal(vec3 p, float e) {
   vec2 h = vec2(e, 0.0);
   return normalize(vec3(
     mandelbulbDE(p + h.xyy) - mandelbulbDE(p - h.xyy),
@@ -84,9 +84,11 @@ void main() {
   vec3 rd = normalize(uCamForward + ndc.x * uTanHalfFov * uCamRight + ndc.y * uTanHalfFov * uCamUp);
   vec3 ro = uCamPos;
 
-  const int MAX_STEPS = 96;
+  const int MAX_STEPS = 160;
   const float MAX_DIST = 12.0;
-  const float EPS = 0.0008;
+  const float FIXED_EPS = 0.0008;
+  const float MIN_EPS = 0.0002;
+  const float EPS_DIST_SCALE = 0.0004;
 
   float t = 0.0;
   int steps = 0;
@@ -94,7 +96,12 @@ void main() {
   for (int i = 0; i < MAX_STEPS; i++) {
     vec3 p = ro + rd * t;
     float d = mandelbulbDE(p);
-    if (d < EPS) { hit = true; steps = i; break; }
+    // Adaptive mode ties the hit threshold to distance traveled so fine
+    // detail close to the camera gets a tighter (not looser) tolerance,
+    // instead of a single fixed threshold that's too coarse once you zoom
+    // in past the scale of the surface detail it was tuned for.
+    float eps = uAdaptiveEps > 0.5 ? max(MIN_EPS, t * EPS_DIST_SCALE) : FIXED_EPS;
+    if (d < eps) { hit = true; steps = i; break; }
     t += d * 0.9;
     steps = i;
     if (t > MAX_DIST) break;
@@ -107,7 +114,11 @@ void main() {
   }
 
   vec3 p = ro + rd * t;
-  vec3 n = estimateNormal(p);
+  const float FIXED_NORMAL_EPS = 0.0015;
+  const float MIN_NORMAL_EPS = 0.0002;
+  const float NORMAL_EPS_DIST_SCALE = 0.0006;
+  float normalEps = uAdaptiveEps > 0.5 ? max(MIN_NORMAL_EPS, t * NORMAL_EPS_DIST_SCALE) : FIXED_NORMAL_EPS;
+  vec3 n = estimateNormal(p, normalEps);
   vec3 lightDir = normalize(vec3(0.6, 0.8, 0.5));
   float diff = max(dot(n, lightDir), 0.0);
   float ao = 1.0 - float(steps) / float(MAX_STEPS);

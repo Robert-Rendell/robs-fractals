@@ -201,6 +201,12 @@
   color: #16140f;
 }
 
+/* No physical keyboard on mobile, so WASD travel controls aren't usable —
+   hidden below the desktop breakpoint. */
+.travelButton {
+  display: none;
+}
+
 /* Placed last so these overrides win over the base rules above regardless
    of source order elsewhere in the file — CSS cascade ties break on order,
    not on which rule is "inside" the media query. */
@@ -238,5 +244,9 @@
 
   .tickMarks {
     display: block;
+  }
+
+  .travelButton {
+    display: inline-block;
   }
 }
