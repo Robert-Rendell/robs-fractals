@@ -27,39 +27,6 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .header {
-    flex-direction: row;
-    align-items: center;
-    gap: 28px;
-  }
-
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .sliderRow {
-    flex: 1;
-    margin-top: 0;
-  }
-
-  .sliderLabel {
-    flex-shrink: 0;
-  }
-
-  .sliderRow > span {
-    display: none;
-  }
-
-  .tooltip {
-    display: block;
-  }
-}
-
 .viewport {
   position: relative;
   flex: 1 1 auto;
@@ -205,4 +172,40 @@
   background: #378add;
   border-color: #378add;
   color: #16140f;
+}
+
+/* Placed last so these overrides win over the base rules above regardless
+   of source order elsewhere in the file — CSS cascade ties break on order,
+   not on which rule is "inside" the media query. */
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sliderRow {
+    flex: 1;
+    margin-top: 0;
+  }
+
+  .sliderLabel {
+    flex-shrink: 0;
+  }
+
+  .sliderRow > span {
+    display: none;
+  }
+
+  .tooltip {
+    display: block;
+  }
 }
