@@ -42,6 +42,14 @@ export default function Mandelbulb() {
       let dragging = false;
       let lastX = 0;
       let lastY = 0;
+      const activePointers = new Map<number, { x: number; y: number }>();
+      let lastPinchDist: number | null = null;
+
+      const getPinchDist = () => {
+        const pts = Array.from(activePointers.values());
+        if (pts.length < 2) return null;
+        return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      };
 
       const initialWidth = viewport.clientWidth || 300;
       const initialHeight = viewport.clientHeight || 300;
@@ -95,14 +103,35 @@ export default function Mandelbulb() {
       }
 
       const onPointerDown = (e: PointerEvent) => {
-        dragging = true;
-        lastX = e.clientX;
-        lastY = e.clientY;
-        renderer.domElement.style.cursor = "grabbing";
         renderer.domElement.setPointerCapture(e.pointerId);
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (activePointers.size === 1) {
+          dragging = true;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          renderer.domElement.style.cursor = "grabbing";
+        } else {
+          dragging = false;
+          lastPinchDist = getPinchDist();
+        }
         e.preventDefault();
       };
       const onPointerMove = (e: PointerEvent) => {
+        if (!activePointers.has(e.pointerId)) return;
+        activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (activePointers.size >= 2) {
+          const dist = getPinchDist();
+          if (dist !== null && lastPinchDist !== null) {
+            camDist *= lastPinchDist / dist;
+            camDist = Math.max(1.2, Math.min(8, camDist));
+          }
+          lastPinchDist = dist;
+          render();
+          return;
+        }
+
         if (!dragging) return;
         rotY += (e.clientX - lastX) * 0.008;
         rotX += (e.clientY - lastY) * 0.008;
@@ -112,10 +141,25 @@ export default function Mandelbulb() {
         render();
       };
       const onPointerUp = (e: PointerEvent) => {
-        dragging = false;
-        renderer.domElement.style.cursor = "grab";
+        activePointers.delete(e.pointerId);
         if (renderer.domElement.hasPointerCapture(e.pointerId)) {
           renderer.domElement.releasePointerCapture(e.pointerId);
+        }
+
+        if (activePointers.size === 1) {
+          const remaining = activePointers.values().next().value;
+          dragging = true;
+          if (remaining) {
+            lastX = remaining.x;
+            lastY = remaining.y;
+          }
+          lastPinchDist = null;
+        } else if (activePointers.size === 0) {
+          dragging = false;
+          renderer.domElement.style.cursor = "grab";
+          lastPinchDist = null;
+        } else {
+          lastPinchDist = getPinchDist();
         }
       };
       const onWheel = (e: WheelEvent) => {
@@ -134,6 +178,7 @@ export default function Mandelbulb() {
       renderer.domElement.addEventListener("pointerdown", onPointerDown);
       window.addEventListener("pointermove", onPointerMove);
       window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
       renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
       powerInput.addEventListener("input", onPowerInput);
 
@@ -154,6 +199,7 @@ export default function Mandelbulb() {
         renderer.domElement.removeEventListener("pointerdown", onPointerDown);
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerUp);
         renderer.domElement.removeEventListener("wheel", onWheel);
         powerInput.removeEventListener("input", onPowerInput);
         geometry.dispose();
@@ -189,7 +235,7 @@ export default function Mandelbulb() {
         this generalizes &quot;raise a vector to the nth power&quot; to 3D via spherical
         coordinates, then tests whether each point&apos;s orbit escapes — the same escape-time
         idea as Mandelbrot itself, rendered by raymarching a distance estimator since there&apos;s
-        no simple surface equation to draw directly. Drag to orbit, scroll to zoom.
+        no simple surface equation to draw directly. Drag to orbit, scroll or pinch to zoom.
       </p>
     </div>
   );
