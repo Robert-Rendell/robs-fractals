@@ -1,0 +1,98 @@
+.container {
+  background: #16140f;
+  color: #e8e6dd;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel {
+  flex: 0 0 180px;
+}
+
+.plane {
+  touch-action: none;
+  cursor: grab;
+  background: #201d17;
+  border-radius: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.plane * {
+  -webkit-user-drag: none;
+}
+
+.viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 280px;
+  min-height: 280px;
+  cursor: grab;
+  background: #201d17;
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.viewport canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.readout {
+  font-size: 12px;
+  color: #b4b2a9;
+  margin: 10px 0 14px;
+  line-height: 1.7;
+}
+
+.twistLabel {
+  font-size: 12px;
+  color: #b4b2a9;
+}
+
+.twistRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.twistRow input[type="range"] {
+  flex: 1;
+}
+
+.twistRow span {
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 32px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #888780;
+  margin: 10px 0 0;
+}
