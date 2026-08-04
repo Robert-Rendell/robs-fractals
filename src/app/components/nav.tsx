@@ -3,6 +3,8 @@ import Link from "next/link";
 const links = [
   { href: "/", label: "Home" },
   { href: "/apex-fractal", label: "Apex Fractal" },
+  { href: "/mandelbulb", label: "Mandelbulb" },
+  { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
 ];
 
 export default function Nav() {

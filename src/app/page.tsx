@@ -26,6 +26,22 @@ export default function Home() {
             </div>
           </div>
         </Link>
+        <Link href="/mandelbulb" className={styles.card}>
+          <Image
+            src="/mandelbulb-thumb.png"
+            alt="Mandelbulb thumbnail"
+            width={320}
+            height={220}
+            className={styles.thumb}
+          />
+          <div className={styles.cardBody}>
+            <div className={styles.cardTitle}>Mandelbulb</div>
+            <div className={styles.cardDescription}>
+              The 3D analogue of the Mandelbrot set, raymarched live in the browser with an
+              adjustable power.
+            </div>
+          </div>
+        </Link>
       </div>
 
       <section className={styles.categories}>
