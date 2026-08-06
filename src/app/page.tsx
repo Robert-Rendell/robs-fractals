@@ -1,14 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
+import QrCodeButton from "./components/qr-code-button";
 import styles from "./home.module.css";
 
 export default function Home() {
   return (
     <div>
-      <h1>Rob&apos;s Fractals</h1>
-      <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>
-        Welcome to the home page.
-      </p>
+      <div className={styles.heading}>
+        <div>
+          <h1>Rob&apos;s Fractals</h1>
+          <p style={{ color: "var(--muted)", marginTop: "0.5rem" }}>
+            Welcome to the home page.
+          </p>
+        </div>
+        <QrCodeButton />
+      </div>
       <div className={styles.cards}>
         <Link href="/apex-fractal" className={styles.card}>
           <Image
