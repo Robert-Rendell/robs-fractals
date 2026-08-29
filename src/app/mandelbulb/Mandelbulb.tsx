@@ -530,8 +530,16 @@ export default function Mandelbulb() {
 
       const onTravelLook = (e: MouseEvent) => {
         if (!travelMode || document.pointerLockElement !== renderer.domElement) return;
-        travelYaw += e.movementX * MOUSE_LOOK_SENSITIVITY;
-        travelPitch -= e.movementY * MOUSE_LOOK_SENSITIVITY;
+        // Mouse deltas are screen-relative, but yaw/pitch are defined against
+        // world-up/levelRight (roll-independent) axes. Rotate the delta by
+        // the current roll so mouse-look still matches screen directions
+        // after rolling with Q/E.
+        const dx = e.movementX * MOUSE_LOOK_SENSITIVITY;
+        const dyUp = -e.movementY * MOUSE_LOOK_SENSITIVITY;
+        const cosR = Math.cos(travelRoll);
+        const sinR = Math.sin(travelRoll);
+        travelYaw += dx * cosR - dyUp * sinR;
+        travelPitch += dx * sinR + dyUp * cosR;
         travelPitch = Math.max(-TRAVEL_PITCH_LIMIT, Math.min(TRAVEL_PITCH_LIMIT, travelPitch));
         render();
       };
