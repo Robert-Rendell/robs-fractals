@@ -7,13 +7,14 @@ import styles from "./mandelbox.module.css";
 type Vec3 = [number, number, number];
 
 // This box-fold/sphere-fold formula only stays a well-behaved distance
-// estimator (finite, monotonic in true distance) for negative scale in
-// roughly this range — outside it, the DE collapses toward zero nearly
-// everywhere in space (not just near the fractal), which reads as a
-// degenerate black render rather than an empty one.
-const SCALE_MIN = -3;
-const SCALE_MAX = -1.05;
-const SCALE_TICKS = [-3, -2.75, -2.5, -2.25, -2, -1.75, -1.5, -1.25];
+// estimator (finite, monotonic in true distance) for negative scale — past
+// roughly -0.5 in one direction and effectively unbounded in the other,
+// outside which it collapses toward zero nearly everywhere in space (not
+// just near the fractal), which reads as a degenerate black render rather
+// than an empty one.
+const SCALE_MIN = -4;
+const SCALE_MAX = -1;
+const SCALE_TICKS = [-4, -3.5, -3, -2.5, -2, -1.75, -1.5, -1.25, -1];
 const DEFAULT_SCALE = -2;
 
 const INITIAL_ROT_X = 0.3;
@@ -21,7 +22,7 @@ const INITIAL_ROT_Y = 0.6;
 const INITIAL_CAM_DIST = 5.5;
 const MIN_CAM_DIST = 0.5;
 const MAX_CAM_DIST = 12;
-const WHEEL_SCALE_STEP = 0.0012;
+const WHEEL_SCALE_STEP = 0.002;
 
 const TRAVEL_SPEED = 1.8;
 const TRAVEL_ACCEL_TIME = 1.2;
