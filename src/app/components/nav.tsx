@@ -8,6 +8,7 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/apex-fractal", label: "Apex Fractal" },
   { href: "/mandelbulb", label: "Mandelbulb" },
+  { href: "/mandelbox", label: "Mandelbox" },
   { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
   { href: "/pythagoras-tree", label: "Pythagoras Tree" },
 ];

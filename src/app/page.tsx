@@ -48,6 +48,22 @@ export default function Home() {
             </div>
           </div>
         </Link>
+        <Link href="/mandelbox" className={styles.card}>
+          <Image
+            src="/mandelbox-thumb.png"
+            alt="Mandelbox thumbnail"
+            width={320}
+            height={220}
+            className={styles.thumb}
+          />
+          <div className={styles.cardBody}>
+            <div className={styles.cardTitle}>Mandelbox</div>
+            <div className={styles.cardDescription}>
+              A box-fold and sphere-fold 3D fractal, raymarched live with an adjustable scale
+              parameter.
+            </div>
+          </div>
+        </Link>
         <Link href="/mandelbrot-bifurcation" className={styles.card}>
           <Image
             src="/mandelbrot-bifurcation-thumb.png"

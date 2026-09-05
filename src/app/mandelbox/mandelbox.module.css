@@ -95,7 +95,7 @@
   margin-bottom: 10px;
   transform: translateX(-50%);
   background: #201d17;
-  border: 1px solid #378add;
+  border: 1px solid #d97f37;
   color: #e8e6dd;
   font-size: 12px;
   font-weight: 600;
@@ -113,7 +113,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: #378add;
+  border-top-color: #d97f37;
 }
 
 .tooltip::after {
@@ -161,12 +161,12 @@
 
 .tick:hover .tickLine,
 .tick:focus-visible .tickLine {
-  background: #378add;
+  background: #d97f37;
 }
 
 .tick:hover .tickLabel,
 .tick:focus-visible .tickLabel {
-  color: #378add;
+  color: #d97f37;
 }
 
 .hint {
@@ -191,12 +191,12 @@
 }
 
 .toggleButton:hover {
-  border-color: #378add;
+  border-color: #d97f37;
 }
 
 .toggleButton[aria-pressed="true"] {
-  background: #378add;
-  border-color: #378add;
+  background: #d97f37;
+  border-color: #d97f37;
   color: #16140f;
 }
 
