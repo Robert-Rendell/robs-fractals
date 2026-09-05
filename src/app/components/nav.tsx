@@ -9,7 +9,6 @@ const links = [
   { href: "/apex-fractal", label: "Apex Fractal" },
   { href: "/mandelbulb", label: "Mandelbulb" },
   { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
-  { href: "/om-fractal", label: "Om Fractal" },
   { href: "/pythagoras-tree", label: "Pythagoras Tree" },
 ];
 

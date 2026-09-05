@@ -48,6 +48,38 @@ export default function Home() {
             </div>
           </div>
         </Link>
+        <Link href="/mandelbrot-bifurcation" className={styles.card}>
+          <Image
+            src="/mandelbrot-bifurcation-thumb.png"
+            alt="Mandelbrot & Bifurcation thumbnail"
+            width={320}
+            height={220}
+            className={styles.thumb}
+          />
+          <div className={styles.cardBody}>
+            <div className={styles.cardTitle}>Mandelbrot & Bifurcation</div>
+            <div className={styles.cardDescription}>
+              The Mandelbrot set and the logistic map&apos;s bifurcation diagram, side by side —
+              two views of the same underlying dynamics.
+            </div>
+          </div>
+        </Link>
+        <Link href="/pythagoras-tree" className={styles.card}>
+          <Image
+            src="/pythagoras-tree-thumb.svg"
+            alt="Pythagoras Tree thumbnail"
+            width={320}
+            height={220}
+            className={styles.thumb}
+          />
+          <div className={styles.cardBody}>
+            <div className={styles.cardTitle}>Pythagoras Tree</div>
+            <div className={styles.cardDescription}>
+              A branching Iterated Function System — a square sprouts two smaller squares from a
+              right triangle, recursively, in 2D and 3D.
+            </div>
+          </div>
+        </Link>
       </div>
 
       <section className={styles.categories}>
