@@ -120,3 +120,40 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.attractorGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.75rem;
+}
+
+.attractorItem {
+  display: block;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s ease;
+}
+
+.attractorItem:hover {
+  border-color: #378add;
+}
+
+.attractorThumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: #050506;
+}
+
+.attractorLabel {
+  display: block;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--foreground);
+  line-height: 1.3;
+}

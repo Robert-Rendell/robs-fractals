@@ -11,6 +11,7 @@ const links = [
   { href: "/mandelbox", label: "Mandelbox" },
   { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
   { href: "/pythagoras-tree", label: "Pythagoras Tree" },
+  { href: "/strange-attractors", label: "Strange Attractors" },
 ];
 
 export default function Nav() {

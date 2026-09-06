@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import QrCodeButton from "./components/qr-code-button";
+import { ATTRACTORS } from "./strange-attractors/attractorDefs";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -169,9 +170,24 @@ export default function Home() {
               </span>
             </summary>
             <div className={styles.accordionContent}>
-              Fractal-dimensional sets arising from chaotic continuous dynamical systems, plotted
-              in phase space rather than image space. Lorenz attractor, Hénon map, Rössler
-              attractor.
+              Fractal-dimensional sets arising from chaotic dynamical systems, plotted in phase
+              space rather than image space — some are continuous flows integrated over time,
+              others are discrete maps iterated point by point. Full write-up and live renders on
+              the <Link href="/strange-attractors">Strange Attractor Atlas</Link> page.
+              <div className={styles.attractorGrid}>
+                {ATTRACTORS.map((a) => (
+                  <Link key={a.id} href={`/strange-attractors#${a.id}`} className={styles.attractorItem}>
+                    <Image
+                      src={`/strange-attractors/${a.id}-thumb.png`}
+                      alt={`${a.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.attractorThumb}
+                    />
+                    <span className={styles.attractorLabel}>{a.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
 
