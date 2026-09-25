@@ -26,7 +26,7 @@ interface LinkedIfsDef {
 
 export type IfsDef = GeneratedIfsDef | LinkedIfsDef;
 
-function expandLSystem(axiom: string, rules: Record<string, string>, iterations: number): string {
+export function expandLSystem(axiom: string, rules: Record<string, string>, iterations: number): string {
   let s = axiom;
   for (let i = 0; i < iterations; i++) {
     let next = "";
@@ -39,7 +39,7 @@ function expandLSystem(axiom: string, rules: Record<string, string>, iterations:
 // Interprets an L-system string as turtle-graphics moves: F/G draw forward
 // one unit, +/- turn by the given angle, [/] push/pop position+heading for
 // branching systems. Every fractal below reduces to this one primitive.
-function turtleSegments(instructions: string, angleDeg: number, startAngleDeg = 0): Segment[] {
+export function turtleSegments(instructions: string, angleDeg: number, startAngleDeg = 0): Segment[] {
   const angle = (angleDeg * Math.PI) / 180;
   let x = 0, y = 0, dir = (startAngleDeg * Math.PI) / 180;
   const stack: Array<[number, number, number]> = [];

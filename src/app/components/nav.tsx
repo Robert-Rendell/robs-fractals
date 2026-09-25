@@ -11,9 +11,12 @@ const links = [
   { href: "/mandelbox", label: "Mandelbox" },
   { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
   { href: "/pythagoras-tree", label: "Pythagoras Tree" },
-  { href: "/strange-attractors", label: "Strange Attractors" },
-  { href: "/cellular-automata", label: "Cellular Automata" },
+  { href: "/escape-time", label: "Escape-Time" },
   { href: "/ifs-fractals", label: "IFS Fractals" },
+  { href: "/l-systems", label: "L-Systems" },
+  { href: "/strange-attractors", label: "Strange Attractors" },
+  { href: "/random-fractals", label: "Random Fractals" },
+  { href: "/cellular-automata", label: "Cellular Automata" },
 ];
 
 export default function Nav() {

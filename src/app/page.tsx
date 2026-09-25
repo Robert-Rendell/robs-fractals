@@ -2,8 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import QrCodeButton from "./components/qr-code-button";
 import { AUTOMATA } from "./cellular-automata/automatonDefs";
+import { ESCAPE_FRACTALS } from "./escape-time/escapeDefs";
 import { ATTRACTORS } from "./strange-attractors/attractorDefs";
 import { IFS_FRACTALS } from "./ifs-fractals/ifsDefs";
+import { L_SYSTEMS } from "./l-systems/lsystemDefs";
+import { RANDOM_FRACTALS } from "./random-fractals/randomDefs";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -121,7 +124,26 @@ export default function Home() {
               stays bounded. This is Mandelbrot (z → z² + c), Julia sets (same map, fixed c,
               varying starting z), the Burning Ship, and Newton fractals (basins of attraction
               for root-finding). The fractal is a map of behavior over parameter/state space, not
-              a constructed shape.
+              a constructed shape. Full write-up and live renders on the{" "}
+              <Link href="/escape-time">Escape-Time Atlas</Link> page.
+              <div className={styles.categoryThumbGrid}>
+                {ESCAPE_FRACTALS.map((e) => (
+                  <Link
+                    key={e.id}
+                    href={e.kind === "linked" ? e.href : `/escape-time#${e.id}`}
+                    className={styles.categoryThumbItem}
+                  >
+                    <Image
+                      src={e.kind === "linked" ? e.thumbSrc : `/escape-time/${e.id}-thumb.png`}
+                      alt={`${e.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.categoryThumbImg}
+                    />
+                    <span className={styles.categoryThumbLabel}>{e.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
 
@@ -179,7 +201,22 @@ export default function Home() {
             <div className={styles.accordionContent}>
               String-rewriting grammars driving turtle graphics. Heavily overlaps with branching
               IFS (fractal plants, the Hilbert curve) but generalizes it to arbitrary rule-based
-              grammars rather than fixed geometric maps.
+              grammars rather than fixed geometric maps. Full write-up and live renders on the{" "}
+              <Link href="/l-systems">L-System Atlas</Link> page.
+              <div className={styles.categoryThumbGrid}>
+                {L_SYSTEMS.map((l) => (
+                  <Link key={l.id} href={`/l-systems#${l.id}`} className={styles.categoryThumbItem}>
+                    <Image
+                      src={`/l-systems/${l.id}-thumb.png`}
+                      alt={`${l.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.categoryThumbImg}
+                    />
+                    <span className={styles.categoryThumbLabel}>{l.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
 
@@ -222,7 +259,22 @@ export default function Home() {
             <div className={styles.accordionContent}>
               Self-similar only in a statistical sense, built from stochastic processes.
               Fractional Brownian motion, diffusion-limited aggregation, Perlin-noise terrain,
-              coastlines (Mandelbrot&apos;s original motivating example).
+              coastlines (Mandelbrot&apos;s original motivating example). Full write-up and live
+              renders on the <Link href="/random-fractals">Random Fractal Atlas</Link> page.
+              <div className={styles.categoryThumbGrid}>
+                {RANDOM_FRACTALS.map((r) => (
+                  <Link key={r.id} href={`/random-fractals#${r.id}`} className={styles.categoryThumbItem}>
+                    <Image
+                      src={`/random-fractals/${r.id}-thumb.png`}
+                      alt={`${r.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.categoryThumbImg}
+                    />
+                    <span className={styles.categoryThumbLabel}>{r.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
 

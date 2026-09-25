@@ -4,7 +4,9 @@ export function plotSegments(
   canvas: HTMLCanvasElement,
   segments: Segment[],
   color: string,
-  opts: { glow?: boolean } = {},
+  // `hues` recolours the path from the first hue to the second in drawing
+  // order, which makes a single space-filling curve's route readable.
+  opts: { glow?: boolean; hues?: [number, number] } = {},
 ) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -32,11 +34,31 @@ export function plotSegments(
   const ox = canvas.width / 2;
   const oy = canvas.height / 2;
 
-  const path = new Path2D();
-  for (const [x1, y1, x2, y2] of segments) {
-    path.moveTo(ox + (x1 - cx) * scale, oy - (y1 - cy) * scale);
-    path.lineTo(ox + (x2 - cx) * scale, oy - (y2 - cy) * scale);
+  // Batched into a fixed number of paths so a gradient costs a few dozen
+  // strokes rather than one per segment.
+  const batches = opts.hues ? Math.min(96, segments.length) : 1;
+  const paths: Path2D[] = [];
+  for (let b = 0; b < batches; b++) {
+    const path = new Path2D();
+    const from = Math.floor((b * segments.length) / batches);
+    const to = Math.floor(((b + 1) * segments.length) / batches);
+    for (let i = from; i < to; i++) {
+      const [x1, y1, x2, y2] = segments[i];
+      path.moveTo(ox + (x1 - cx) * scale, oy - (y1 - cy) * scale);
+      path.lineTo(ox + (x2 - cx) * scale, oy - (y2 - cy) * scale);
+    }
+    paths.push(path);
   }
+  const strokeAll = () => {
+    paths.forEach((path, b) => {
+      if (opts.hues) {
+        const [h0, h1] = opts.hues;
+        const t = batches === 1 ? 0 : b / (batches - 1);
+        ctx.strokeStyle = `hsl(${h0 + (h1 - h0) * t} 80% 64%)`;
+      }
+      ctx.stroke(path);
+    });
+  };
 
   ctx.strokeStyle = color;
   ctx.lineJoin = "round";
@@ -50,10 +72,10 @@ export function plotSegments(
     ctx.filter = "blur(2.5px)";
     ctx.globalAlpha = 0.5;
     ctx.lineWidth = 3;
-    ctx.stroke(path);
+    strokeAll();
     ctx.filter = "none";
     ctx.globalAlpha = 1;
   }
   ctx.lineWidth = 1;
-  ctx.stroke(path);
+  strokeAll();
 }
