@@ -130,7 +130,7 @@ export default function Home() {
                 {ESCAPE_FRACTALS.map((e) => (
                   <Link
                     key={e.id}
-                    href={e.kind === "linked" ? e.href : `/escape-time#${e.id}`}
+                    href={e.href ?? `/escape-time#${e.id}`}
                     className={styles.categoryThumbItem}
                   >
                     <Image

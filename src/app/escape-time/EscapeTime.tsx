@@ -52,6 +52,25 @@ const FAMILIES: {
   },
 ];
 
+function EscapeCanvas({
+  id,
+  canvasRefs,
+}: {
+  id: string;
+  canvasRefs: React.RefObject<Map<string, HTMLCanvasElement>>;
+}) {
+  return (
+    <canvas
+      width={CANVAS_SIZE}
+      height={CANVAS_SIZE}
+      ref={(el) => {
+        if (el) canvasRefs.current.set(id, el);
+        else canvasRefs.current.delete(id);
+      }}
+    />
+  );
+}
+
 function EscapeCard({
   def,
   canvasRefs,
@@ -62,16 +81,15 @@ function EscapeCard({
   return (
     <article id={def.id} className={styles.card}>
       {def.kind === "generated" ? (
-        <div className={styles.canvasWrap}>
-          <canvas
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            ref={(el) => {
-              if (el) canvasRefs.current.set(def.id, el);
-              else canvasRefs.current.delete(def.id);
-            }}
-          />
-        </div>
+        def.href ? (
+          <Link href={def.href} className={styles.canvasWrap}>
+            <EscapeCanvas id={def.id} canvasRefs={canvasRefs} />
+          </Link>
+        ) : (
+          <div className={styles.canvasWrap}>
+            <EscapeCanvas id={def.id} canvasRefs={canvasRefs} />
+          </div>
+        )
       ) : (
         <Link href={def.href} className={styles.thumbWrap}>
           <Image
@@ -90,6 +108,11 @@ function EscapeCard({
           <>
             <div className={styles.cardSpec}>{def.formula}</div>
             <div className={styles.cardParams}>{def.params}</div>
+            {def.href && (
+              <Link href={def.href} className={styles.cardLink}>
+                Step through it interactively →
+              </Link>
+            )}
           </>
         ) : (
           <Link href={def.href} className={styles.cardLink}>

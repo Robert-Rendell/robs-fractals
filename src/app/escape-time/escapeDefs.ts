@@ -26,6 +26,8 @@ interface GeneratedEscapeDef {
   // Newton's method colours by which root is reached rather than by escape
   // speed, so it supplies its own colouring.
   colorize?: (x: number, y: number) => [number, number, number];
+  // Optional interactive page for this fractal; the card links there.
+  href?: string;
 }
 
 interface LinkedEscapeDef {
@@ -300,6 +302,7 @@ export const ESCAPE_FRACTALS: EscapeDef[] = [
     maxIter: 40,
     palette: { phase: [0, 0, 0], freq: 0 },
     kernel: (x, y, maxIter) => newton(x, y, maxIter)[1],
+    href: "/newton-fractal",
     colorize: (x, y) => {
       const [r, n] = newton(x, y, 40);
       if (r < 0) return [0, 0, 0];
