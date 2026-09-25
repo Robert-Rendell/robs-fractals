@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Intersection3D from "./Intersection3D";
 import styles from "./mandelbrot-bifurcation.module.css";
 
 const REAL_MIN = -2.5;
@@ -56,7 +57,7 @@ export default function MandelbrotBifurcation() {
     const mCtx: CanvasRenderingContext2D = mCtxEl;
     const bCtx: CanvasRenderingContext2D = bCtxEl;
 
-    let r = 3.5;
+    let r = 3.8;
     let mandelbrotStatic: HTMLCanvasElement | null = null;
     let bifurcationStatic: HTMLCanvasElement | null = null;
 
@@ -271,9 +272,9 @@ export default function MandelbrotBifurcation() {
       <div className={styles.controls}>
         <label className={styles.sliderLabel}>r (logistic map parameter)</label>
         <div className={styles.sliderRow}>
-          <input ref={rInputRef} type="range" min={1} max={4} step={0.001} defaultValue={3.5} />
+          <input ref={rInputRef} type="range" min={1} max={4} step={0.001} defaultValue={3.8} />
           <span className={styles.readout}>
-            r = <span ref={rOutRef}>3.500</span>, c = <span ref={cOutRef}>-0.375</span>
+            r = <span ref={rOutRef}>3.800</span>, c = <span ref={cOutRef}>-1.710</span>
           </span>
         </div>
       </div>
@@ -282,6 +283,15 @@ export default function MandelbrotBifurcation() {
         Dragging r sweeps c along the Mandelbrot set&apos;s real axis (white line) — the
         period-doubling cascade in the bifurcation diagram is the same structure as the bulbs
         strung along that axis, down to sharing the same Feigenbaum scaling ratio.
+      </p>
+      <Intersection3D rInputRef={rInputRef} />
+      <p className={styles.hint}>
+        In z-coordinates the bifurcation diagram is just the orbit of 0 under z → z² + c for real
+        c ∈ [−2, ¼] — the logistic diagram mirrored and rescaled. Stood on edge through the real
+        axis, each period-doubling fork sits directly above the bulb where that period is born,
+        and the chaotic band opens over the antenna, with the periodic windows lining up with the
+        tiny minibrots strung along it. The white slice and dots follow the r slider above, and the
+        camera tracks it along the real axis.
       </p>
     </div>
   );

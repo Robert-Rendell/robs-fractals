@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import QrCodeButton from "./components/qr-code-button";
 import { ATTRACTORS } from "./strange-attractors/attractorDefs";
+import { IFS_FRACTALS } from "./ifs-fractals/ifsDefs";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -132,7 +133,8 @@ export default function Home() {
             </summary>
             <div className={styles.accordionContent}>
               A small set of contraction maps applied recursively; the fractal is the attractor.
-              This splits into two visually distinct sub-families:
+              This splits into two visually distinct sub-families — full write-up and live
+              renders on the <Link href="/ifs-fractals">IFS Fractal Atlas</Link> page:
               <ul className={styles.subList}>
                 <li>
                   <strong>Curve-replacement</strong>: a segment is replaced by a connected
@@ -145,6 +147,24 @@ export default function Home() {
                   and the Apex Fractal falls here.
                 </li>
               </ul>
+              <div className={styles.categoryThumbGrid}>
+                {IFS_FRACTALS.map((f) => (
+                  <Link
+                    key={f.id}
+                    href={f.kind === "linked" ? f.href : `/ifs-fractals#${f.id}`}
+                    className={styles.categoryThumbItem}
+                  >
+                    <Image
+                      src={f.kind === "linked" ? f.thumbSrc : `/ifs-fractals/${f.id}-thumb.png`}
+                      alt={`${f.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.categoryThumbImg}
+                    />
+                    <span className={styles.categoryThumbLabel}>{f.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
 
@@ -174,17 +194,17 @@ export default function Home() {
               space rather than image space — some are continuous flows integrated over time,
               others are discrete maps iterated point by point. Full write-up and live renders on
               the <Link href="/strange-attractors">Strange Attractor Atlas</Link> page.
-              <div className={styles.attractorGrid}>
+              <div className={styles.categoryThumbGrid}>
                 {ATTRACTORS.map((a) => (
-                  <Link key={a.id} href={`/strange-attractors#${a.id}`} className={styles.attractorItem}>
+                  <Link key={a.id} href={`/strange-attractors#${a.id}`} className={styles.categoryThumbItem}>
                     <Image
                       src={`/strange-attractors/${a.id}-thumb.png`}
                       alt={`${a.name} thumbnail`}
                       width={110}
                       height={110}
-                      className={styles.attractorThumb}
+                      className={styles.categoryThumbImg}
                     />
-                    <span className={styles.attractorLabel}>{a.name}</span>
+                    <span className={styles.categoryThumbLabel}>{a.name}</span>
                   </Link>
                 ))}
               </div>

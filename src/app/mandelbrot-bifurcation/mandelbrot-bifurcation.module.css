@@ -87,3 +87,21 @@
   margin: 14px 0 0;
   line-height: 1.6;
 }
+
+.panelWrap3d {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.canvasWrap3d {
+  flex: none;
+  height: min(70vh, 640px);
+  min-height: 320px;
+  cursor: grab;
+}
+
+.canvasWrap3d:active {
+  cursor: grabbing;
+}

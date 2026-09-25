@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "./components/nav";
 import MainContent from "./components/main-content";
+import PerfBadge from "./components/perf-badge";
 
 export const metadata: Metadata = {
   title: "Rob's Fractals",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <Nav />
         <MainContent>{children}</MainContent>
+        <PerfBadge />
       </body>
     </html>
   );

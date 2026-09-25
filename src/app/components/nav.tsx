@@ -12,6 +12,7 @@ const links = [
   { href: "/mandelbrot-bifurcation", label: "Mandelbrot & Bifurcation" },
   { href: "/pythagoras-tree", label: "Pythagoras Tree" },
   { href: "/strange-attractors", label: "Strange Attractors" },
+  { href: "/ifs-fractals", label: "IFS Fractals" },
 ];
 
 export default function Nav() {
