@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import QrCodeButton from "./components/qr-code-button";
+import { AUTOMATA } from "./cellular-automata/automatonDefs";
 import { ATTRACTORS } from "./strange-attractors/attractorDefs";
 import { IFS_FRACTALS } from "./ifs-fractals/ifsDefs";
 import styles from "./home.module.css";
@@ -234,7 +235,24 @@ export default function Home() {
             </summary>
             <div className={styles.accordionContent}>
               Fractal patterns emerging from discrete rule iteration, e.g. Sierpiński&apos;s
-              triangle from Pascal&apos;s triangle mod 2, or Rule 90.
+              triangle from Pascal&apos;s triangle mod 2, or Rule 90. Some are genuine
+              automata stepped generation by generation, others are closed-form
+              combinatorial rules evaluated per cell — full write-up and live renders on the{" "}
+              <Link href="/cellular-automata">Cellular Automaton Atlas</Link> page.
+              <div className={styles.categoryThumbGrid}>
+                {AUTOMATA.map((a) => (
+                  <Link key={a.id} href={`/cellular-automata#${a.id}`} className={styles.categoryThumbItem}>
+                    <Image
+                      src={`/cellular-automata/${a.id}-thumb.png`}
+                      alt={`${a.name} thumbnail`}
+                      width={110}
+                      height={110}
+                      className={styles.categoryThumbImg}
+                    />
+                    <span className={styles.categoryThumbLabel}>{a.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </details>
         </div>
